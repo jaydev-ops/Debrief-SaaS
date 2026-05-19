@@ -1,0 +1,6 @@
+{
+  "name": "Debrief: AI-Powered Smart Notes",
+  "description": "A smart note-taking app that automatically categorizes meeting notes into Actions, Decisions, Problems, and Discussions using AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
