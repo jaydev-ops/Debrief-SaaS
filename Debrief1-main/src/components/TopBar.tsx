@@ -9,6 +9,7 @@ const ROUTE_LABELS: Record<Route, string> = {
   decision: 'Decisions',
   discussion: 'Discussion',
   problem: 'Problems',
+  settings: 'Settings',
 };
 
 interface TopBarProps {

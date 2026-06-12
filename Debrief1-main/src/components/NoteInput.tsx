@@ -26,7 +26,7 @@ export const NoteInput: React.FC<NoteInputProps> = ({ isOpen, onClose, roomId, m
 
     try {
       // Delegate everything to NotesContext which handles optimistic UI & POST /notes
-      await addNote(content, meetingId, roomId);
+      await addNote(content);
       setContent('');
       onClose();
     } catch (err) {
