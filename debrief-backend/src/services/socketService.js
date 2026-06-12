@@ -5,11 +5,24 @@ const prisma = require('../prisma');
 let io;
 
 function initSocket(server) {
+  const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    'http://localhost:5173',
+    'http://localhost:3000'
+  ].filter(Boolean);
+
   io = new Server(server, {
     cors: {
-      origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+          return callback(null, true);
+        }
+        return callback(new Error('Blocked by CORS policy'));
+      },
       credentials: true
-    }
+    },
+    transports: ['websocket', 'polling'] // Allow both transports for compatibility
   });
 
   io.use((socket, next) => {

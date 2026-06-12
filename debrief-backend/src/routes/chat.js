@@ -13,8 +13,8 @@ const { requireAuth } = require('../middleware/auth');
 router.use(requireAuth);
 
 router.post('/', sendMessage);
-router.get('/:meetingId', getMessages);
 router.get('/room/:roomId', getMessages);
+router.get('/:meetingId', getMessages);
 router.delete('/:id', deleteMessage);
 
 module.exports = router;

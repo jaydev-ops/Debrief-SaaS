@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { SOCKET_URL } from '../services/config';
 
 let socketInstance: Socket | null = null;
 
@@ -12,9 +13,11 @@ export const useSocket = () => {
     if (!token) return;
 
     if (!socketInstance) {
-      socketInstance = io(import.meta.env.VITE_API_URL || 'http://localhost:3001', {
+      socketInstance = io(SOCKET_URL, {
         auth: { token },
-        transports: ['websocket']
+        transports: ['websocket', 'polling'], // Allow fallback for corporate proxy compatibility
+        reconnectionDelayMax: 10000,
+        reconnectionAttempts: 10
       });
     }
 

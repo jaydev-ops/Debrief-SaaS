@@ -13,6 +13,14 @@
 // This makes process.env.PORT, process.env.JWT_SECRET, etc. available everywhere
 require('dotenv').config();
 
+// Fail-fast checks for required environment variables
+const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'FRONTEND_URL'];
+const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+if (missingEnvVars.length > 0) {
+  console.error(`\n❌ CRITICAL STARTUP ERROR: Missing required environment variables:\n   ${missingEnvVars.join(', ')}\n`);
+  process.exit(1);
+}
+
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
@@ -36,11 +44,22 @@ const PORT = process.env.PORT || 3001;
 // Middleware = functions that run on every request before it hits a route.
 // ════════════════════════════════════════════════════════════════════════════
 
-// 1. CORS — allows your frontend (localhost:5173) to talk to this server
-//    Without this, the browser will block all requests with a CORS error.
+// 1. CORS — allows your frontend to talk to this server with credentials
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+  'http://localhost:3000'
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true, // Allow cookies/auth headers
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // Allow non-browser requests
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    return callback(new Error('Blocked by CORS policy'));
+  },
+  credentials: true,
 }));
 
 // 2. JSON Parser — reads incoming JSON request bodies
@@ -95,16 +114,26 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: 'An unexpected error occurred.' });
 });
 
+// Centralized handlers for uncaught issues to prevent silent crashes or hangs
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception thrown:', error);
+  process.exit(1); // Fail fast, container manager (Railway) will restart
+});
+
 // ════════════════════════════════════════════════════════════════════════════
 // START SERVER
 // ════════════════════════════════════════════════════════════════════════════
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log('');
   console.log('🚀 Debrief backend is running!');
-  console.log(`📡 URL:      http://localhost:${PORT}`);
-  console.log(`❤️  Health:   http://localhost:${PORT}/health`);
-  console.log(`🗄️  Database: ${process.env.DATABASE_URL}`);
+  console.log(`📡 URL:      http://0.0.0.0:${PORT}`);
+  console.log(`❤️  Health:   http://0.0.0.0:${PORT}/health`);
+  console.log(`🗄️  Database: Initialized`);
   console.log('');
   console.log('Available routes:');
   console.log('  POST   /auth/register');

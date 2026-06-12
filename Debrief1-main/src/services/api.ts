@@ -1,8 +1,9 @@
 import axios from "axios";
+import { API_URL } from "./config";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:3001",
-  timeout: 10000,
+  baseURL: API_URL,
+  timeout: 25000, // 25s timeout to survive serverless database (Neon) cold-starts
 });
 
 // Auto-attach JWT to every request
