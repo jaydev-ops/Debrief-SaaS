@@ -26,7 +26,7 @@ const { broadcastMessageDeletedToRoom } = require('../services/socketService');
       return res.status(400).json({ error: 'meetingId or roomId is required.' });
     }
 
-    const meetingIdInt = meetingId ? parseInt(meetingId) : 1; // Fallback for MVP db constraint
+    const meetingIdInt = meetingId ? parseInt(meetingId) : null;
     const roomIdInt = roomId ? parseInt(roomId) : null;
 
     // ── Save message ──────────────────────────────────────────────────────────

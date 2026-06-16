@@ -60,7 +60,7 @@ function initSocket(server) {
           data: {
             text,
             roomId,
-            meetingId: meetingId || 1, // Default to 1 if no meeting provided yet
+            meetingId: meetingId || null,
             senderId: socket.user.id
           },
           include: {

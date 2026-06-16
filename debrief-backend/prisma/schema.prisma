@@ -83,8 +83,8 @@ model ChatMessage {
   createdAt DateTime @default(now())
 
   // Which meeting's chat?
-  meetingId Int
-  meeting   Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  meetingId Int?
+  meeting   Meeting? @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
   // Who sent it?
   senderId Int?

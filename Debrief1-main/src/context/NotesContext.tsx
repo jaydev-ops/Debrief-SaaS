@@ -71,7 +71,6 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       title: 'Syncing...',
       createdAt: Date.now(),
       syncStatus: 'pending',
-      meetingId: 1, // Fallback for MVP if needed by DB constraints
       roomId: activeRoom.id
     };
     
@@ -80,7 +79,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     try {
       // 2. Call POST /notes
-      const res = await api.post('/notes', { content, meetingId: 1, roomId: activeRoom.id });
+      const res = await api.post('/notes', { content, roomId: activeRoom.id });
       const createdNote = res.data.note;
       
       // 3. Replace temp note with real one
@@ -105,7 +104,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await syncQueue.enqueue({
         id: tempId,
         type: 'CREATE_NOTE',
-        payload: { content, meetingId: 1, roomId: activeRoom.id },
+        payload: { content, roomId: activeRoom.id },
         timestamp: Date.now()
       });
       // Keep optimistic note but marked as offline
