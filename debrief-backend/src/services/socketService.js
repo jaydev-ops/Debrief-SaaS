@@ -6,7 +6,7 @@ let io;
 
 function initSocket(server) {
   const allowedOrigins = [
-    process.env.FRONTEND_URL,
+    process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : null, // Strip trailing slash
     'http://localhost:5173',
     'http://localhost:3000'
   ].filter(Boolean);
@@ -15,10 +15,11 @@ function initSocket(server) {
     cors: {
       origin: (origin, callback) => {
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+        const sanitizedOrigin = origin.replace(/\/$/, '');
+        if (allowedOrigins.indexOf(sanitizedOrigin) !== -1 || process.env.NODE_ENV !== 'production') {
           return callback(null, true);
         }
-        return callback(new Error('Blocked by CORS policy'));
+        return callback(null, false);
       },
       credentials: true
     },
