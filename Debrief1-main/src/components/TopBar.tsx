@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, Check, LogOut, Plus, Key } from 'lucide-react';
+import { Search, ChevronDown, Check, LogOut, Plus, Key, Menu } from 'lucide-react';
 import { useRouter } from '../context/RouterContext';
 import { Route } from '../types';
 
@@ -15,11 +15,12 @@ const ROUTE_LABELS: Record<Route, string> = {
 interface TopBarProps {
   onSearch: (q: string) => void;
   onOpenWorkspaceModal: (mode: 'create' | 'join') => void;
+  onToggleSidebar: () => void;
 }
 
 import { useRoom } from '../context/RoomContext';
 
-export const TopBar: React.FC<TopBarProps> = ({ onSearch, onOpenWorkspaceModal }) => {
+export const TopBar: React.FC<TopBarProps> = ({ onSearch, onOpenWorkspaceModal, onToggleSidebar }) => {
   const { route } = useRouter();
   const { activeRoom, setActiveRoom, rooms, leaveRoom } = useRoom();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -36,19 +37,27 @@ export const TopBar: React.FC<TopBarProps> = ({ onSearch, onOpenWorkspaceModal }
   }, []);
 
   return (
-    <header className="fixed top-0 left-60 right-0 h-14 bg-white/80 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-6 z-30">
-      <div className="flex items-center gap-3 text-sm">
+    <header className="fixed top-0 left-0 md:left-60 right-0 h-14 bg-white/80 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-4 md:px-6 z-30">
+      <div className="flex items-center gap-2 md:gap-3 text-sm min-w-0">
+        {/* Mobile hamburger menu */}
+        <button
+          onClick={onToggleSidebar}
+          className="p-1.5 -ml-1 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors md:hidden flex-shrink-0"
+          aria-label="Toggle sidebar"
+        >
+          <Menu size={20} />
+        </button>
         
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative min-w-0" ref={dropdownRef}>
           <button 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 px-2 py-1 -ml-2 rounded-md hover:bg-gray-100 transition-colors group"
+            className="flex items-center gap-1.5 md:gap-2 px-1.5 md:px-2 py-1 -ml-1.5 md:-ml-2 rounded-md hover:bg-gray-100 transition-colors group min-w-0"
             title="Switch Workspace"
           >
-            <span className="text-gray-400 font-medium group-hover:text-gray-600 transition-colors">
+            <span className="text-gray-400 font-medium group-hover:text-gray-600 transition-colors truncate max-w-[100px] sm:max-w-[180px]">
               {activeRoom ? activeRoom.name : 'Select Workspace'}
             </span>
-            <ChevronDown className="w-3 h-3 text-gray-400 group-hover:text-gray-600" />
+            <ChevronDown className="w-3 h-3 text-gray-400 group-hover:text-gray-600 flex-shrink-0" />
           </button>
 
           {isDropdownOpen && (
@@ -95,11 +104,11 @@ export const TopBar: React.FC<TopBarProps> = ({ onSearch, onOpenWorkspaceModal }
             </div>
           )}
         </div>
-        <span className="text-gray-300">/</span>
-        <span className="font-semibold text-gray-800">{ROUTE_LABELS[route]}</span>
+        <span className="text-gray-300 hidden sm:inline">/</span>
+        <span className="font-semibold text-gray-800 hidden sm:inline">{ROUTE_LABELS[route]}</span>
         
         {activeRoom && (
-          <div className="ml-4 flex items-center gap-2">
+          <div className="ml-2 md:ml-4 flex items-center gap-2 hidden sm:flex">
             <span className="text-[10px] font-mono text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
               Code: {activeRoom.inviteCode}
             </span>
@@ -107,13 +116,13 @@ export const TopBar: React.FC<TopBarProps> = ({ onSearch, onOpenWorkspaceModal }
         )}
       </div>
 
-      <div className="relative">
+      <div className="relative flex-shrink-0">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={13} />
         <input
           type="text"
-          placeholder="Search notes…"
+          placeholder="Search…"
           onChange={e => onSearch(e.target.value)}
-          className="pl-8 pr-4 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:bg-white focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none w-44 transition-all placeholder:text-gray-400"
+          className="pl-8 pr-3 md:pr-4 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:bg-white focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none w-28 sm:w-36 md:w-44 transition-all placeholder:text-gray-400"
         />
       </div>
     </header>

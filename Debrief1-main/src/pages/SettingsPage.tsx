@@ -26,7 +26,7 @@ export const SettingsPage: React.FC = () => {
     : 'Unknown Date';
 
   return (
-    <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div className="max-w-3xl w-full animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Account Settings</h1>
         <p className="text-sm text-gray-500 mt-1">Manage your profile, workspaces, and account security.</p>
@@ -39,7 +39,7 @@ export const SettingsPage: React.FC = () => {
             <h2 className="text-sm font-semibold text-gray-900">Profile Information</h2>
           </div>
           <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
                   <User size={12} /> Name
@@ -81,9 +81,9 @@ export const SettingsPage: React.FC = () => {
           <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
             <h2 className="text-sm font-semibold text-gray-900">Security & Access</h2>
           </div>
-          <div className="p-6 space-y-4">
+          <div className="p-4 sm:p-6 space-y-4">
             
-            <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 bg-gray-50/50">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
               <div className="flex gap-3 items-center">
                 <div className="p-2 bg-white rounded-lg shadow-sm border border-gray-200 text-gray-600">
                   <Key size={16} />
@@ -95,13 +95,13 @@ export const SettingsPage: React.FC = () => {
               </div>
               <button 
                 disabled
-                className="px-4 py-2 bg-gray-100 text-gray-400 text-sm font-medium rounded-lg cursor-not-allowed border border-gray-200"
+                className="px-4 py-2 bg-gray-100 text-gray-400 text-sm font-medium rounded-lg cursor-not-allowed border border-gray-200 w-full sm:w-auto"
               >
                 Coming soon
               </button>
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 bg-gray-50/50">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
               <div className="flex gap-3 items-center">
                 <div className="p-2 bg-white rounded-lg shadow-sm border border-gray-200 text-gray-600">
                   <LogOut size={16} />
@@ -113,7 +113,7 @@ export const SettingsPage: React.FC = () => {
               </div>
               <button 
                 onClick={logout}
-                className="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg border border-gray-200 transition-colors shadow-sm"
+                className="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg border border-gray-200 transition-colors shadow-sm w-full sm:w-auto"
               >
                 Sign out
               </button>

@@ -42,6 +42,7 @@ function MainApp() {
   const [isInputOpen, setIsInputOpen] = useState(false);
   const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(!activeRoom);
   const [workspaceModalMode, setWorkspaceModalMode] = useState<'select' | 'create' | 'join'>('select');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // If activeRoom changes to null internally, make sure to open the modal
   useEffect(() => {
@@ -50,6 +51,11 @@ function MainApp() {
       setWorkspaceModalMode('select');
     }
   }, [activeRoom]);
+
+  // Close sidebar on route change (mobile navigation)
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [route]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -75,19 +81,24 @@ function MainApp() {
 
   return (
     <div className="min-h-screen bg-[#F7F6F3] text-gray-900">
-      <Sidebar onNewNote={() => setIsInputOpen(true)} />
+      <Sidebar 
+        onNewNote={() => setIsInputOpen(true)} 
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
 
-      <div className="ml-60">
+      <div className="md:ml-60 transition-[margin] duration-300">
         <TopBar 
           onSearch={setSearchQuery} 
           onOpenWorkspaceModal={(mode) => {
             setWorkspaceModalMode(mode);
             setIsWorkspaceModalOpen(true);
           }}
+          onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
         />
 
         <main className="pt-14 min-h-screen">
-          <div className="px-8 py-8 flex gap-8 max-w-6xl w-full">
+          <div className="px-4 sm:px-6 md:px-8 py-6 md:py-8 flex flex-col lg:flex-row gap-6 lg:gap-8 max-w-6xl w-full">
             {route === 'settings' ? (
               <div className="flex-1 min-w-0 w-full">
                 <SettingsPage />
@@ -97,8 +108,8 @@ function MainApp() {
                 {/* Main content */}
                 <div className="flex-1 min-w-0">
                   {/* Page header */}
-                  <div className="mb-6">
-                    <h1 className="text-xl font-bold text-gray-900">{ROUTE_LABELS[route]}</h1>
+                  <div className="mb-4 md:mb-6">
+                    <h1 className="text-lg md:text-xl font-bold text-gray-900">{ROUTE_LABELS[route]}</h1>
                     <p className="text-sm text-gray-500 mt-0.5">
                       {filtered.length} {filtered.length === 1 ? 'note' : 'notes'}
                       {searchQuery && ` matching "${searchQuery}"`}
@@ -122,7 +133,7 @@ function MainApp() {
       {/* FAB */}
       <button
         onClick={() => setIsInputOpen(true)}
-        className="fixed bottom-8 right-8 w-12 h-12 bg-gray-900 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50"
+        className="fixed bottom-6 right-4 md:bottom-8 md:right-8 w-12 h-12 bg-gray-900 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50"
         title="New note (⌥N)"
       >
         <Plus size={20} />
@@ -169,4 +180,3 @@ export default function App() {
     </AuthProvider>
   );
 }
-

@@ -11,9 +11,44 @@
 @layer base {
   body {
     @apply bg-[#F7F6F3] text-gray-900 font-sans antialiased;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
   }
 
   * {
     box-sizing: border-box;
+  }
+
+  /* Prevent text selection on buttons for touch UX */
+  button {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Smooth scroll for iOS */
+  .overflow-y-auto,
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide scrollbar utility for horizontal scroll strips */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Mobile-safe input styles to prevent iOS zoom on focus */
+  input, textarea, select {
+    font-size: 16px;
+  }
+
+  @media (min-width: 768px) {
+    input, textarea, select {
+      font-size: inherit;
+    }
   }
 }

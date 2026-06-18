@@ -112,11 +112,11 @@ export const GroupChat: React.FC<{ roomId?: number, meetingId?: number }> = ({ r
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-24 right-8 w-12 h-12 bg-blue-600 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40 group ${isOpen ? 'hidden' : 'flex'}`}
+        className={`fixed bottom-20 right-4 md:bottom-24 md:right-8 w-12 h-12 bg-blue-600 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40 group ${isOpen ? 'hidden' : 'flex'}`}
       >
         <MessageSquare size={20} />
         {connected && <span className="absolute top-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>}
-        <span className="absolute right-14 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+        <span className="absolute right-14 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none hidden md:block">
           Team Chat
         </span>
       </button>
@@ -127,7 +127,7 @@ export const GroupChat: React.FC<{ roomId?: number, meetingId?: number }> = ({ r
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            className="fixed bottom-8 right-8 w-80 sm:w-96 h-[500px] max-h-[80vh] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col z-50 overflow-hidden"
+            className="fixed bottom-0 right-0 left-0 md:bottom-8 md:right-8 md:left-auto w-full md:w-96 h-[85vh] md:h-[500px] md:max-h-[80vh] bg-white md:rounded-2xl shadow-2xl border border-gray-100 flex flex-col z-50 overflow-hidden rounded-t-2xl"
           >
             <div className="p-4 bg-gray-900 text-white flex justify-between items-center shrink-0">
               <div className="flex items-center gap-2">
