@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, Check, LogOut, Plus, Key, Menu } from 'lucide-react';
+import { Search, ChevronDown, Check, LogOut, Plus, Key, Menu, Copy, CheckCheck } from 'lucide-react';
 import { useRouter } from '../context/RouterContext';
 import { Route } from '../types';
 
@@ -24,6 +24,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onSearch, onOpenWorkspaceModal, 
   const { route } = useRouter();
   const { activeRoom, setActiveRoom, rooms, leaveRoom } = useRoom();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [codeCopied, setCodeCopied] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,7 +62,39 @@ export const TopBar: React.FC<TopBarProps> = ({ onSearch, onOpenWorkspaceModal, 
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute top-full left-0 mt-1 w-64 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-50">
+            <div className="absolute top-full left-0 mt-1 w-72 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-50">
+              {/* Invite code banner - always visible when a room is active */}
+              {activeRoom && (
+                <div className="mx-3 mb-2 p-2.5 bg-gray-50 rounded-lg border border-gray-200">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Invite Code</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-mono font-bold text-gray-900 tracking-widest select-all">
+                      {activeRoom.inviteCode}
+                    </span>
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        try {
+                          await navigator.clipboard.writeText(activeRoom.inviteCode);
+                          setCodeCopied(true);
+                          setTimeout(() => setCodeCopied(false), 2000);
+                        } catch {
+                          // Fallback: select the text
+                        }
+                      }}
+                      className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium transition-all ${
+                        codeCopied
+                          ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                          : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100 active:scale-95'
+                      }`}
+                    >
+                      {codeCopied ? <><CheckCheck size={12} /> Copied!</> : <><Copy size={12} /> Copy</>}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1.5">Share this code to invite teammates</p>
+                </div>
+              )}
+
               <div className="px-3 pb-2 mb-2 border-b border-gray-100">
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Your Workspaces</p>
               </div>
