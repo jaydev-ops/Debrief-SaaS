@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useRoom } from '../context/RoomContext';
-import { User, Mail, Calendar, Key, LogOut, AlertTriangle, Building, X } from 'lucide-react';
+import { User, Mail, Calendar, Key, LogOut, AlertTriangle, Building, X, Trash2 } from 'lucide-react';
 
 export const SettingsPage: React.FC = () => {
   const { user, logout, deleteAccount } = useAuth();
-  const { rooms } = useRoom();
+  const { rooms, activeRoom, deleteRoom } = useRoom();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeletingWorkspace, setIsDeletingWorkspace] = useState(false);
+  const [workspaceDeleteError, setWorkspaceDeleteError] = useState('');
 
   const handleDeleteConfirm = async () => {
     if (deleteInput !== 'DELETE') return;
@@ -129,7 +131,44 @@ export const SettingsPage: React.FC = () => {
               <AlertTriangle size={16} /> Danger Zone
             </h2>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-6 space-y-4">
+            {/* Delete Workspace */}
+            {activeRoom && (
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between p-4 rounded-xl border border-red-100 bg-red-50/30">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                    <Trash2 size={14} className="text-red-500" />
+                    Delete Workspace
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1 max-w-md leading-relaxed">
+                    Permanently delete <span className="font-semibold text-gray-700">"{activeRoom.name}"</span> and all its notes, messages, and members. Only admins can do this.
+                  </p>
+                  {workspaceDeleteError && (
+                    <p className="text-xs text-red-600 font-medium mt-1">{workspaceDeleteError}</p>
+                  )}
+                </div>
+                <button 
+                  onClick={async () => {
+                    if (!confirm(`Are you sure you want to delete "${activeRoom.name}"? This action cannot be undone.`)) return;
+                    setIsDeletingWorkspace(true);
+                    setWorkspaceDeleteError('');
+                    try {
+                      await deleteRoom(activeRoom.id);
+                    } catch (err: any) {
+                      setWorkspaceDeleteError(err.response?.data?.error || 'Failed to delete workspace. You must be an admin.');
+                    } finally {
+                      setIsDeletingWorkspace(false);
+                    }
+                  }}
+                  disabled={isDeletingWorkspace}
+                  className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 text-sm font-bold rounded-lg transition-colors border border-red-200 shrink-0 w-full sm:w-auto disabled:opacity-50"
+                >
+                  {isDeletingWorkspace ? 'Deleting…' : 'Delete workspace'}
+                </button>
+              </div>
+            )}
+
+            {/* Delete Account */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <div>
                 <h3 className="text-sm font-semibold text-gray-900">Delete Account</h3>
@@ -140,7 +179,7 @@ export const SettingsPage: React.FC = () => {
               </div>
               <button 
                 onClick={() => setIsDeleteModalOpen(true)}
-                className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 text-sm font-bold rounded-lg transition-colors border border-red-200 shrink-0"
+                className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 text-sm font-bold rounded-lg transition-colors border border-red-200 shrink-0 w-full sm:w-auto"
               >
                 Delete account
               </button>

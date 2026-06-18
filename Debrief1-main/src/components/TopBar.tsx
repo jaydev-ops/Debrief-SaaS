@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, Check, LogOut, Plus, Key, Menu, Copy, CheckCheck } from 'lucide-react';
+import { Search, ChevronDown, Check, LogOut, Plus, Key, Menu, Copy, CheckCheck, Trash2 } from 'lucide-react';
 import { useRouter } from '../context/RouterContext';
 import { Route } from '../types';
 
@@ -22,9 +22,10 @@ import { useRoom } from '../context/RoomContext';
 
 export const TopBar: React.FC<TopBarProps> = ({ onSearch, onOpenWorkspaceModal, onToggleSidebar }) => {
   const { route } = useRouter();
-  const { activeRoom, setActiveRoom, rooms, leaveRoom } = useRoom();
+  const { activeRoom, setActiveRoom, rooms, leaveRoom, deleteRoom } = useRoom();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -101,21 +102,63 @@ export const TopBar: React.FC<TopBarProps> = ({ onSearch, onOpenWorkspaceModal, 
               
               <div className="max-h-60 overflow-y-auto">
                 {rooms.map(room => (
-                  <div key={room.id} className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 group/item">
-                    <button 
-                      onClick={() => { setActiveRoom(room); setIsDropdownOpen(false); }}
-                      className="flex-1 flex items-center gap-2 text-left px-2 py-1.5 rounded-lg text-sm text-gray-700 font-medium"
-                    >
-                      {activeRoom?.id === room.id ? <Check size={14} className="text-gray-900" /> : <span className="w-[14px]"></span>}
-                      <span className="truncate">{room.name}</span>
-                    </button>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); leaveRoom(room.id); }}
-                      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md opacity-0 group-hover/item:opacity-100 transition-all"
-                      title="Leave Workspace"
-                    >
-                      <LogOut size={14} />
-                    </button>
+                  <div key={room.id} className="flex flex-col">
+                    <div className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 group/item">
+                      <button 
+                        onClick={() => { setActiveRoom(room); setIsDropdownOpen(false); setConfirmDeleteId(null); }}
+                        className="flex-1 flex items-center gap-2 text-left px-2 py-1.5 rounded-lg text-sm text-gray-700 font-medium"
+                      >
+                        {activeRoom?.id === room.id ? <Check size={14} className="text-gray-900" /> : <span className="w-[14px]"></span>}
+                        <span className="truncate">{room.name}</span>
+                      </button>
+                      <div className="flex items-center gap-0.5">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfirmDeleteId(confirmDeleteId === room.id ? null : room.id);
+                          }}
+                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md opacity-0 group-hover/item:opacity-100 transition-all"
+                          title="Delete Workspace"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); leaveRoom(room.id); }}
+                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md opacity-0 group-hover/item:opacity-100 transition-all"
+                          title="Leave Workspace"
+                        >
+                          <LogOut size={14} />
+                        </button>
+                      </div>
+                    </div>
+                    {/* Delete confirmation inline */}
+                    {confirmDeleteId === room.id && (
+                      <div className="mx-3 mb-1 p-2 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-[11px] text-red-700 font-medium mb-2">Delete "{room.name}"? This removes all notes, messages, and members.</p>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              try {
+                                await deleteRoom(room.id);
+                                setConfirmDeleteId(null);
+                              } catch (err: any) {
+                                alert(err.response?.data?.error || 'Failed to delete. You must be an admin.');
+                              }
+                            }}
+                            className="flex-1 py-1.5 bg-red-600 text-white text-[11px] font-bold rounded-md hover:bg-red-700 transition-colors"
+                          >
+                            Yes, Delete
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(null); }}
+                            className="flex-1 py-1.5 bg-white text-gray-600 text-[11px] font-medium rounded-md border border-gray-200 hover:bg-gray-50 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

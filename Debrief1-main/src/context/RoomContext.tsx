@@ -11,6 +11,7 @@ interface RoomContextValue {
   createRoom: (name: string, description?: string) => Promise<Room>;
   joinRoom: (inviteCode: string) => Promise<Room>;
   leaveRoom: (roomId: number) => Promise<void>;
+  deleteRoom: (roomId: number) => Promise<void>;
   fetchRooms: () => Promise<void>;
 }
 
@@ -98,8 +99,16 @@ export const RoomProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const deleteRoom = async (roomId: number) => {
+    await api.delete(`/rooms/${roomId}`);
+    setRooms(prev => prev.filter(r => r.id !== roomId));
+    if (activeRoom && activeRoom.id === roomId) {
+      setActiveRoom(null);
+    }
+  };
+
   return (
-    <RoomContext.Provider value={{ rooms, activeRoom, setActiveRoom, isLoadingRooms, createRoom, joinRoom, leaveRoom, fetchRooms }}>
+    <RoomContext.Provider value={{ rooms, activeRoom, setActiveRoom, isLoadingRooms, createRoom, joinRoom, leaveRoom, deleteRoom, fetchRooms }}>
       {children}
     </RoomContext.Provider>
   );
